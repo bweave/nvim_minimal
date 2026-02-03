@@ -774,14 +774,21 @@ later(function()
     end, { desc = 'Search keymaps' })
 end)
 
--- Git signs
+-- Git signs in the gutter
 later(function()
-    require('mini.diff').setup({
+    local diff = require('mini.diff')
+    diff.setup({
         view = {
             style = 'sign',
             signs = { add = '│', change = '│', delete = '_' },
         },
+        source = diff.gen_source.git(),
     })
+
+    -- Hunk navigation
+    vim.keymap.set('n', '<leader>ghn', function() diff.goto_hunk('next') end, { desc = 'Git hunk next' })
+    vim.keymap.set('n', '<leader>ghp', function() diff.goto_hunk('prev') end, { desc = 'Git hunk prev' })
+    vim.keymap.set('n', '<leader>gd', function() diff.toggle_overlay() end, { desc = 'Toggle git diff overlay' })
 end)
 
 -- Completion
