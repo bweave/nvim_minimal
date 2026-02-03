@@ -909,3 +909,61 @@ later(function()
     end, { desc = 'Copy selection for Slack' })
 end)
 
+--------------------------------------------------------------------------------
+-- 13. Berg Weekly Update (~/brain only)
+--------------------------------------------------------------------------------
+later(function()
+    local function berg_weekly_update()
+        -- Only works from ~/brain directory
+        local cwd = vim.fn.getcwd()
+        local brain_dir = vim.fn.expand('~/brain')
+        if not cwd:find(brain_dir, 1, true) then
+            vim.notify('Berg Weekly Update only works from ~/brain', vim.log.levels.WARN)
+            return
+        end
+
+        local date_str = os.date('%m-%d-%Y')
+        local dir_path = vim.fn.expand('~/brain/berg-weekly-updates')
+        local file_path = dir_path .. '/' .. date_str .. '.md'
+
+        -- Create directory if needed
+        vim.fn.mkdir(dir_path, 'p')
+
+        -- Check if file already exists
+        if vim.fn.filereadable(file_path) == 1 then
+            vim.cmd('edit ' .. vim.fn.fnameescape(file_path))
+            vim.notify('Opened existing update: ' .. date_str, vim.log.levels.INFO)
+            return
+        end
+
+        -- Template content (uses • for Slack-compatible bullets)
+        local template = {
+            '**Weekly Update** ' .. os.date('%m-%d-%y'),
+            '',
+            '**Wins**',
+            '',
+            '- ',
+            '',
+            '**Risks**',
+            '',
+            '- ',
+            '',
+            '**Priorities**',
+            '',
+            '- ',
+            '',
+        }
+
+        -- Create and populate the file
+        vim.cmd('edit ' .. vim.fn.fnameescape(file_path))
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, template)
+
+        -- Position cursor at end of first bullet and enter insert mode
+        vim.api.nvim_win_set_cursor(0, { 5, 2 })
+        vim.cmd('startinsert!')
+
+        vim.notify('Created weekly update: ' .. date_str, vim.log.levels.INFO)
+    end
+
+    vim.keymap.set('n', '<leader>U', berg_weekly_update, { desc = 'Berg Weekly Update' })
+end)
