@@ -19,11 +19,22 @@ The configuration is organized into numbered sections in `init.lua`:
 7. **LSP** - Native Neovim 0.11+ API (`vim.lsp.config`, `vim.lsp.enable`)
 8. **Linting** - nvim-lint for RuboCop diagnostics
 9. **Treesitter** - Auto-installs parsers, enables highlighting
-10. **Mini modules** - Icons, tabline, statusline, files, pick, diff, completion, pairs, surround, splitjoin, sessions
+10. **Mini modules** - Icons, tabline, statusline, files, pick, diff (with git signs and hunk navigation), completion, pairs, surround, splitjoin, sessions
 11. **Zen mode** - Distraction-free editing with `<leader>z`
 12. **Copy for Slack** - `<leader>yS` copies buffer/selection as Slack-compatible HTML
 13. **Berg Weekly Update** - `<leader>U` creates weekly update file (only in ~/brain)
 14. **Open on GitHub** - `<leader>gb` opens current line/selection on GitHub
+
+## Git Workflow
+
+**In-editor git features:**
+- Git signs in gutter via mini.diff (add, change, delete indicators)
+- `<leader>ghn` / `<leader>ghp` - Navigate to next/previous hunk
+- `<leader>gd` - Toggle inline diff overlay
+- `<leader>gg` - Open lazygit in floating terminal (requires lazygit installed)
+- `<leader>gb` - Open current line on GitHub
+
+For full git operations (staging, committing, branching), use `<leader>gg` to open lazygit.
 
 ## Key Patterns
 
