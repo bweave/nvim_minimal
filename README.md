@@ -16,12 +16,14 @@ On first launch, mini.nvim will auto-install. Other plugins will install as need
 
 ## Features
 
-- Single `init.lua` file (~800 lines)
+- Single `init.lua` file (~1000 lines)
 - Fast startup with deferred plugin loading
 - Native Neovim 0.11+ LSP configuration
 - Seamless tmux/vim split navigation
 - LSP progress indicator for indexing feedback
 - Auto-save/restore sessions per directory
+- Git signs in gutter with hunk navigation
+- Lazygit integration in floating terminal
 - habamax colorscheme with transparency support
 
 ## LSP Servers
@@ -110,6 +112,15 @@ Leader key is `<Space>`.
 | `sr` | Replace surrounding |
 | `sf` | Find surrounding |
 | `sh` | Highlight surrounding |
+
+### Git
+
+| Key | Action |
+|-----|--------|
+| `<leader>gg` | Open lazygit |
+| `<leader>ghn` / `<leader>ghp` | Next/previous git hunk |
+| `<leader>gd` | Toggle git diff overlay |
+| `<leader>gb` | Open current line on GitHub |
 
 ## Plugins
 
