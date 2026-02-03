@@ -248,7 +248,7 @@ now(function()
     -- Search highlights toggle
     map('n', '<leader>h', '<cmd>nohlsearch<cr>', { desc = 'Clear search highlights' })
 
-    -- Move lines
+    -- Move lines (Alt+j/k, with macOS fallbacks for ∆/˚)
     map('n', '<A-j>', '<cmd>m .+1<cr>==', { desc = 'Move line down' })
     map('n', '<A-k>', '<cmd>m .-2<cr>==', { desc = 'Move line up' })
     map('v', '<A-j>', ":m '>+1<cr>gv=gv", { desc = 'Move selection down' })
