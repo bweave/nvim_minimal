@@ -18,30 +18,6 @@ else
   input=$(cat)
 fi
 
-# Convert markdown tables to code blocks (Slack doesn't support HTML tables)
-# Detect table lines (start with |) and wrap them in code fences
-input=$(echo "$input" | awk '
-  BEGIN { in_table = 0 }
-  /^\|/ {
-    if (in_table == 0) {
-      print "```"
-      in_table = 1
-    }
-    print
-    next
-  }
-  {
-    if (in_table == 1) {
-      print "```"
-      in_table = 0
-    }
-    print
-  }
-  END {
-    if (in_table == 1) print "```"
-  }
-')
-
 # Convert markdown to HTML via pandoc
 # +strikeout enables ~~strikethrough~~ syntax
 html=$(echo "$input" | pandoc -f markdown+strikeout -t html)
