@@ -15,11 +15,15 @@ The configuration is organized into numbered sections in `init.lua`:
 3. **Colorscheme** - habamax with transparency overrides
 4. **Editor options** - Standard Neovim settings
 5. **Key mappings** - Leader is space, includes vim-test bindings
-6. **Autocommands** - Filetype settings, yank highlight, cursor restore
+6. **Autocommands** - Filetype settings, yank highlight, cursor restore, markdown list continuation
 7. **LSP** - Native Neovim 0.11+ API (`vim.lsp.config`, `vim.lsp.enable`)
 8. **Linting** - nvim-lint for RuboCop diagnostics
 9. **Treesitter** - Auto-installs parsers, enables highlighting
 10. **Mini modules** - Icons, tabline, statusline, files, pick, diff, completion, pairs, surround, splitjoin, sessions
+11. **Zen mode** - Distraction-free editing with `<leader>z`
+12. **Copy for Slack** - `<leader>yS` copies buffer/selection as Slack-compatible HTML
+13. **Berg Weekly Update** - `<leader>U` creates weekly update file (only in ~/brain)
+14. **Open on GitHub** - `<leader>gb` opens current line/selection on GitHub
 
 ## Key Patterns
 
@@ -34,6 +38,19 @@ The configuration is organized into numbered sections in `init.lua`:
 - `eslint` - via nvim-eslint plugin
 
 **Alternate file mappings**: Defined in `vim.g.projectionist_heuristics` for Ruby (minitest/RSpec), Expo React Native, Rails with Vite, and generic JS/TS projects.
+
+## External Scripts
+
+**bin/md2slack** - Converts markdown to Slack-compatible HTML clipboard. Uses pandoc for markdown parsing and AppleScript to set the macOS clipboard's `text/html` buffer. Supports bold, italic, strikethrough (~text~), links, code, and lists. Requires `pandoc` to be installed.
+
+## Markdown Authoring Workflow
+
+For writing content that will be shared in Slack:
+
+1. Author in standard markdown (lists with `-`, bold with `**`, etc.)
+2. Markdown list continuation (section 6) auto-continues lists on Enter
+3. `<leader>yS` copies with formatting preserved for Slack paste
+4. Strikethrough works with both `~text~` (Slack style) and `~~text~~` (standard markdown)
 
 ## Testing This Config
 
