@@ -876,3 +876,36 @@ later(function()
     vim.keymap.set('n', '<leader>z', '<cmd>ZenMode<cr>', { desc = 'Toggle zen mode' })
 end)
 
+--------------------------------------------------------------------------------
+-- 12. Copy for Slack (markdown → HTML clipboard via md2slack)
+--------------------------------------------------------------------------------
+later(function()
+    local md2slack = vim.fn.stdpath('config') .. '/bin/md2slack'
+
+    local function copy_for_slack(lines)
+        local result = vim.fn.system(md2slack, lines)
+        if vim.v.shell_error ~= 0 then
+            vim.notify('Failed to copy for Slack: ' .. result, vim.log.levels.ERROR)
+            return false
+        end
+        return true
+    end
+
+    vim.keymap.set('n', '<leader>yS', function()
+        local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+        if copy_for_slack(lines) then
+            vim.notify('Copied buffer for Slack', vim.log.levels.INFO)
+        end
+    end, { desc = 'Copy buffer for Slack' })
+
+    vim.keymap.set('v', '<leader>yS', function()
+        vim.cmd('normal! ' .. vim.api.nvim_replace_termcodes('<Esc>', true, false, true))
+        local start_line = vim.fn.line("'<")
+        local end_line = vim.fn.line("'>")
+        local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+        if copy_for_slack(lines) then
+            vim.notify('Copied selection for Slack', vim.log.levels.INFO)
+        end
+    end, { desc = 'Copy selection for Slack' })
+end)
+
