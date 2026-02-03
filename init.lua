@@ -18,6 +18,11 @@ if not vim.loop.fs_stat(mini_path) then
     vim.cmd('echo "Installed mini.nvim" | redraw')
 end
 
+-- MiniDeps provides three core functions for plugin management:
+--   add(spec)   - Declare a plugin dependency (installs if missing, updates with :DepsUpdate)
+--   now(fn)     - Execute fn immediately during startup (for critical UI like colorscheme)
+--   later(fn)   - Defer fn execution until after startup (for non-critical plugins)
+-- Using later() for most plugins keeps startup fast while now() ensures UI is ready immediately.
 require('mini.deps').setup({ path = { package = path_package } })
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 
