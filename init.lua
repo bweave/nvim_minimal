@@ -967,3 +967,71 @@ later(function()
 
     vim.keymap.set('n', '<leader>U', berg_weekly_update, { desc = 'Berg Weekly Update' })
 end)
+
+--------------------------------------------------------------------------------
+-- 14. Open on GitHub
+--------------------------------------------------------------------------------
+later(function()
+    local function get_github_url(start_line, end_line)
+        -- Get git root
+        local git_root = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
+        if vim.v.shell_error ~= 0 then
+            return nil, 'Not a git repository'
+        end
+
+        -- Get remote URL
+        local remote = vim.fn.systemlist('git remote get-url origin')[1]
+        if vim.v.shell_error ~= 0 then
+            return nil, 'No origin remote found'
+        end
+
+        -- Convert SSH/git URL to HTTPS
+        -- git@github.com:user/repo.git -> https://github.com/user/repo
+        -- https://github.com/user/repo.git -> https://github.com/user/repo
+        local github_url = remote
+            :gsub('git@github.com:', 'https://github.com/')
+            :gsub('%.git$', '')
+
+        -- Get current branch
+        local branch = vim.fn.systemlist('git rev-parse --abbrev-ref HEAD')[1]
+        if vim.v.shell_error ~= 0 then
+            branch = 'main'
+        end
+
+        -- Get file path relative to git root
+        local file_path = vim.fn.expand('%:p')
+        local relative_path = file_path:sub(#git_root + 2)
+
+        -- Build URL with line number(s)
+        local url = string.format('%s/blob/%s/%s#L%d', github_url, branch, relative_path, start_line)
+        if end_line and end_line ~= start_line then
+            url = url .. '-L' .. end_line
+        end
+
+        return url
+    end
+
+    local function open_on_github(start_line, end_line)
+        local url, err = get_github_url(start_line, end_line)
+        if not url then
+            vim.notify(err, vim.log.levels.ERROR)
+            return
+        end
+
+        vim.fn.system({ 'open', url })
+        vim.notify('Opened on GitHub', vim.log.levels.INFO)
+    end
+
+    -- Normal mode: open current line
+    vim.keymap.set('n', '<leader>gb', function()
+        open_on_github(vim.fn.line('.'))
+    end, { desc = 'Browse line on GitHub' })
+
+    -- Visual mode: open selected lines
+    vim.keymap.set('v', '<leader>gb', function()
+        vim.cmd('normal! ' .. vim.api.nvim_replace_termcodes('<Esc>', true, false, true))
+        local start_line = vim.fn.line("'<")
+        local end_line = vim.fn.line("'>")
+        open_on_github(start_line, end_line)
+    end, { desc = 'Browse lines on GitHub' })
+end)
