@@ -1,0 +1,39 @@
+#!/bin/bash
+# Convert markdown to HTML and copy to clipboard for Slack
+# Usage: md2slack < file.md
+#        md2slack file.md
+#        echo "**bold**" | md2slack
+
+set -euo pipefail
+
+if ! command -v pandoc &> /dev/null; then
+  echo "Error: pandoc is required but not installed" >&2
+  exit 1
+fi
+
+# Read from file argument or stdin
+if [[ $# -gt 0 ]]; then
+  input=$(cat "$1")
+else
+  input=$(cat)
+fi
+
+# Convert markdown to HTML via pandoc
+# +strikeout enables ~~strikethrough~~ syntax
+html=$(echo "$input" | pandoc -f markdown+strikeout -t html)
+
+# Convert subscript and del to <s> for Slack strikethrough compatibility
+# Pandoc converts ~text~ to <sub> and ~~text~~ to <del>
+# Slack may only support <s> for strikethrough in pasted HTML
+html=$(echo "$html" | sed 's/<sub>/<s>/g; s/<\/sub>/<\/s>/g; s/<del>/<s>/g; s/<\/del>/<\/s>/g')
+
+# Add <br> between block elements to preserve visual spacing
+# This adds a line break after closing tags for paragraphs, lists, etc.
+html=$(echo "$html" | sed 's/<\/p>/<\/p><br>/g; s/<\/ul>/<\/ul><br>/g; s/<\/ol>/<\/ol><br>/g')
+
+# Set HTML clipboard via AppleScript
+echo "$html" | hexdump -ve '1/1 "%.2x"' | \
+  xargs printf 'set the clipboard to {text:" ", «class HTML»:«data HTML%s»}' | \
+  osascript -
+
+echo "Copied to clipboard for Slack"
