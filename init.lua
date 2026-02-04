@@ -82,11 +82,16 @@ now(function()
     -- Transparency overrides
     hl('Normal', { bg = 'NONE' })
     hl('NormalNC', { bg = 'NONE' })
+    hl('NormalFloat', { bg = 'NONE' })
     hl('EndOfBuffer', { bg = 'NONE' })
     hl('SignColumn', { bg = 'NONE' })
     hl('FoldColumn', { bg = 'NONE' })
     hl('VertSplit', { bg = 'NONE' })
     hl('WinSeparator', { bg = 'NONE' })
+
+    -- Mini.files floating window transparency
+    hl('MiniFilesNormal', { bg = 'NONE' })
+    hl('MiniFilesBorder', { bg = 'NONE' })
 
     -- Statusline (habamax palette)
     local sl_bg = '#1c1c1c'
