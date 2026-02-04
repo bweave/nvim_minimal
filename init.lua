@@ -163,6 +163,9 @@ now(function()
     opt.completeopt = 'menuone,noinsert,noselect'
     opt.pumheight = 10
 
+    -- Auto-reload files changed outside Neovim
+    opt.autoread = true
+
     -- Misc
     opt.updatetime = 250
     opt.timeoutlen = 300
@@ -336,6 +339,14 @@ now(function()
         group = augroup('resize_splits', { clear = true }),
         callback = function()
             vim.cmd('tabdo wincmd =')
+        end,
+    })
+
+    -- Check for file changes when focusing Neovim or switching buffers
+    autocmd({ 'FocusGained', 'BufEnter' }, {
+        group = augroup('checktime', { clear = true }),
+        callback = function()
+            vim.cmd('checktime')
         end,
     })
 
