@@ -19,7 +19,7 @@ The configuration is organized into numbered sections in `init.lua`:
 7. **LSP** - Native Neovim 0.11+ API (`vim.lsp.config`, `vim.lsp.enable`)
 8. **Linting** - nvim-lint for RuboCop diagnostics
 9. **Treesitter** - Auto-installs parsers, enables highlighting
-10. **Mini modules** - Icons, tabline, statusline, files, pick, diff (with git signs and hunk navigation), completion, pairs, surround, splitjoin, sessions
+10. **Mini modules** - Icons, tabline, statusline, clue (which-key style hints), files, pick, diff (with git signs and hunk navigation), completion, pairs, surround, splitjoin, sessions
 11. **Zen mode** - Distraction-free editing with `<leader>z`
 12. **Copy for Slack** - `<leader>yS` copies buffer/selection as Slack-compatible HTML
 13. **Berg Weekly Update** - `<leader>U` creates weekly update file (only in ~/brain)

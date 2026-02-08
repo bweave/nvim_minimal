@@ -722,6 +722,74 @@ now(function()
     })
 end)
 
+-- Key clues (which-key style hints for key sequences)
+later(function()
+    local clue = require('mini.clue')
+    clue.setup({
+        triggers = {
+            -- Leader triggers
+            { mode = 'n', keys = '<Leader>' },
+            { mode = 'x', keys = '<Leader>' },
+
+            -- Built-in completion
+            { mode = 'i', keys = '<C-x>' },
+
+            -- `g` key
+            { mode = 'n', keys = 'g' },
+            { mode = 'x', keys = 'g' },
+
+            -- Marks
+            { mode = 'n', keys = "'" },
+            { mode = 'n', keys = '`' },
+            { mode = 'x', keys = "'" },
+            { mode = 'x', keys = '`' },
+
+            -- Registers
+            { mode = 'n', keys = '"' },
+            { mode = 'x', keys = '"' },
+            { mode = 'i', keys = '<C-r>' },
+            { mode = 'c', keys = '<C-r>' },
+
+            -- Window commands
+            { mode = 'n', keys = '<C-w>' },
+
+            -- `z` key
+            { mode = 'n', keys = 'z' },
+            { mode = 'x', keys = 'z' },
+
+            -- Brackets
+            { mode = 'n', keys = '[' },
+            { mode = 'n', keys = ']' },
+        },
+        clues = {
+            -- Leader group descriptions
+            { mode = 'n', keys = '<Leader>b', desc = '+buffers' },
+            { mode = 'n', keys = '<Leader>c', desc = '+code' },
+            { mode = 'n', keys = '<Leader>f', desc = '+find' },
+            { mode = 'n', keys = '<Leader>g', desc = '+git' },
+            { mode = 'n', keys = '<Leader>gh', desc = '+hunks' },
+            { mode = 'n', keys = '<Leader>t', desc = '+test' },
+            { mode = 'n', keys = '<Leader>y', desc = '+yank' },
+            { mode = 'x', keys = '<Leader>g', desc = '+git' },
+            { mode = 'x', keys = '<Leader>y', desc = '+yank' },
+
+            -- Built-in clue generators
+            clue.gen_clues.builtin_completion(),
+            clue.gen_clues.g(),
+            clue.gen_clues.marks(),
+            clue.gen_clues.registers(),
+            clue.gen_clues.windows(),
+            clue.gen_clues.z(),
+        },
+        window = {
+            delay = 300,
+            config = {
+                width = 'auto',
+            },
+        },
+    })
+end)
+
 -- File explorer
 later(function()
     require('mini.files').setup({
