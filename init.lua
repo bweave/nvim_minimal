@@ -70,43 +70,66 @@ later(function()
 end)
 
 --------------------------------------------------------------------------------
--- 3. Colorscheme (habamax with transparency)
+-- 3. Colorscheme (evergreen: everforest-inspired via mini.base16)
 --------------------------------------------------------------------------------
+local palette = {
+    base00 = '#2d353b', -- background
+    base01 = '#343f44', -- lighter bg (line numbers, statusline)
+    base02 = '#3d484d', -- selection background
+    base03 = '#859289', -- comments
+    base04 = '#9da9a0', -- dark foreground (status bars)
+    base05 = '#d3c6aa', -- foreground
+    base06 = '#e6e2cc', -- light foreground
+    base07 = '#fdf6e3', -- lightest foreground
+    base08 = '#e67e80', -- red (variables, errors)
+    base09 = '#e69875', -- orange (constants, numbers)
+    base0A = '#dbbc7f', -- yellow (classes, search)
+    base0B = '#a7c080', -- green (strings)
+    base0C = '#83c092', -- aqua (regex, escape chars)
+    base0D = '#7fbbb3', -- blue (functions)
+    base0E = '#d699b6', -- purple (keywords)
+    base0F = '#d699b6', -- purple (deprecated, embedded)
+}
+
 now(function()
-    vim.cmd.colorscheme('habamax')
+    require('mini.base16').setup({ palette = palette })
 
     local hl = function(group, opts)
         vim.api.nvim_set_hl(0, group, opts)
     end
 
     -- Transparency overrides
-    hl('Normal', { bg = 'NONE' })
+    hl('Normal', { fg = palette.base05, bg = 'NONE' })
     hl('NormalNC', { bg = 'NONE' })
-    hl('NormalFloat', { bg = 'NONE' })
+    hl('NormalFloat', { fg = palette.base05, bg = 'NONE' })
     hl('EndOfBuffer', { bg = 'NONE' })
+    hl('LineNr', { fg = palette.base03, bg = 'NONE' })
+    hl('CursorLineNr', { fg = palette.base05, bg = 'NONE' })
     hl('SignColumn', { bg = 'NONE' })
+    hl('CursorLineSign', { bg = 'NONE' })
+    hl('CursorLineFold', { bg = 'NONE' })
     hl('FoldColumn', { bg = 'NONE' })
-    hl('VertSplit', { bg = 'NONE' })
-    hl('WinSeparator', { bg = 'NONE' })
+    hl('VertSplit', { fg = palette.base02, bg = 'NONE' })
+    hl('WinSeparator', { fg = palette.base02, bg = 'NONE' })
 
     -- Mini.files floating window transparency
     hl('MiniFilesNormal', { bg = 'NONE' })
     hl('MiniFilesBorder', { bg = 'NONE' })
 
-    -- Statusline (habamax palette)
-    local sl_bg = '#1c1c1c'
-    hl('MiniStatuslineModeNormal', { fg = '#1c1c1c', bg = '#5f87af', bold = true })
-    hl('MiniStatuslineModeInsert', { fg = '#1c1c1c', bg = '#5faf5f', bold = true })
-    hl('MiniStatuslineModeVisual', { fg = '#1c1c1c', bg = '#af87af', bold = true })
-    hl('MiniStatuslineModeReplace', { fg = '#1c1c1c', bg = '#af5f5f', bold = true })
-    hl('MiniStatuslineModeCommand', { fg = '#1c1c1c', bg = '#af875f', bold = true })
-    hl('MiniStatuslineModeOther', { fg = '#1c1c1c', bg = '#5f8787', bold = true })
-    hl('MiniStatuslineFilename', { fg = '#bcbcbc', bg = sl_bg })
-    hl('MiniStatuslineDevinfo', { fg = '#9e9e9e', bg = sl_bg })
-    hl('MiniStatuslineFileinfo', { fg = '#9e9e9e', bg = sl_bg })
-    hl('MiniStatuslineInactive', { fg = '#767676', bg = sl_bg })
-    hl('StatusLine', { fg = '#9e9e9e', bg = sl_bg })
-    hl('StatusLineNC', { fg = '#767676', bg = sl_bg })
+    -- Statusline (evergreen palette)
+    local sl_bg = palette.base00
+    hl('MiniStatuslineModeNormal', { fg = palette.base00, bg = palette.base0D, bold = true })
+    hl('MiniStatuslineModeInsert', { fg = palette.base00, bg = palette.base0B, bold = true })
+    hl('MiniStatuslineModeVisual', { fg = palette.base00, bg = palette.base0E, bold = true })
+    hl('MiniStatuslineModeReplace', { fg = palette.base00, bg = palette.base08, bold = true })
+    hl('MiniStatuslineModeCommand', { fg = palette.base00, bg = palette.base0A, bold = true })
+    hl('MiniStatuslineModeOther', { fg = palette.base00, bg = palette.base0C, bold = true })
+    hl('MiniStatuslineFilename', { fg = palette.base05, bg = sl_bg })
+    hl('MiniStatuslineDevinfo', { fg = palette.base04, bg = sl_bg })
+    hl('MiniStatuslineFileinfo', { fg = palette.base04, bg = sl_bg })
+    hl('MiniStatuslineInactive', { fg = palette.base03, bg = sl_bg })
+    hl('StatusLine', { fg = palette.base04, bg = sl_bg })
+    hl('StatusLineNC', { fg = palette.base03, bg = sl_bg })
 end)
 
 --------------------------------------------------------------------------------
@@ -661,15 +684,15 @@ now(function()
         tabpage_section = 'right',
     })
 
-    -- Style tabline to match habamax
-    vim.api.nvim_set_hl(0, 'MiniTablineCurrent', { fg = '#bcbcbc', bg = '#303030', bold = true })
-    vim.api.nvim_set_hl(0, 'MiniTablineVisible', { fg = '#9e9e9e', bg = '#262626' })
-    vim.api.nvim_set_hl(0, 'MiniTablineHidden', { fg = '#767676', bg = '#1c1c1c' })
-    vim.api.nvim_set_hl(0, 'MiniTablineModifiedCurrent', { fg = '#d7af87', bg = '#303030', bold = true })
-    vim.api.nvim_set_hl(0, 'MiniTablineModifiedVisible', { fg = '#d7af87', bg = '#262626' })
-    vim.api.nvim_set_hl(0, 'MiniTablineModifiedHidden', { fg = '#af875f', bg = '#1c1c1c' })
-    vim.api.nvim_set_hl(0, 'MiniTablineFill', { bg = '#1c1c1c' })
-    vim.api.nvim_set_hl(0, 'MiniTablineTabpagesection', { fg = '#1c1c1c', bg = '#5f87af', bold = true })
+    -- Style tabline to match evergreen palette
+    vim.api.nvim_set_hl(0, 'MiniTablineCurrent', { fg = palette.base05, bg = palette.base02, bold = true })
+    vim.api.nvim_set_hl(0, 'MiniTablineVisible', { fg = palette.base04, bg = palette.base01 })
+    vim.api.nvim_set_hl(0, 'MiniTablineHidden', { fg = palette.base03, bg = palette.base00 })
+    vim.api.nvim_set_hl(0, 'MiniTablineModifiedCurrent', { fg = palette.base0A, bg = palette.base02, bold = true })
+    vim.api.nvim_set_hl(0, 'MiniTablineModifiedVisible', { fg = palette.base0A, bg = palette.base01 })
+    vim.api.nvim_set_hl(0, 'MiniTablineModifiedHidden', { fg = palette.base09, bg = palette.base00 })
+    vim.api.nvim_set_hl(0, 'MiniTablineFill', { bg = palette.base00 })
+    vim.api.nvim_set_hl(0, 'MiniTablineTabpagesection', { fg = palette.base00, bg = palette.base0D, bold = true })
 end)
 
 -- Statusline (matches tmux powerline style)
@@ -690,21 +713,21 @@ now(function()
                 local sep_l = '\u{e0b2}'
 
                 -- Get mode bg color
-                local mode_bg = '#5f87af'
+                local mode_bg = palette.base0D
                 if mode_hl == 'MiniStatuslineModeInsert' then
-                    mode_bg = '#5faf5f'
+                    mode_bg = palette.base0B
                 elseif mode_hl == 'MiniStatuslineModeVisual' then
-                    mode_bg = '#af87af'
+                    mode_bg = palette.base0E
                 elseif mode_hl == 'MiniStatuslineModeReplace' then
-                    mode_bg = '#af5f5f'
+                    mode_bg = palette.base08
                 elseif mode_hl == 'MiniStatuslineModeCommand' then
-                    mode_bg = '#af875f'
+                    mode_bg = palette.base0A
                 elseif mode_hl == 'MiniStatuslineModeOther' then
-                    mode_bg = '#5f8787'
+                    mode_bg = palette.base0C
                 end
 
-                vim.api.nvim_set_hl(0, 'StlSepR', { fg = mode_bg, bg = '#1c1c1c' })
-                vim.api.nvim_set_hl(0, 'StlSepL', { fg = mode_bg, bg = '#1c1c1c' })
+                vim.api.nvim_set_hl(0, 'StlSepR', { fg = mode_bg, bg = palette.base00 })
+                vim.api.nvim_set_hl(0, 'StlSepL', { fg = mode_bg, bg = palette.base00 })
 
                 -- Build statusline manually to avoid combine_groups spacing
                 return table.concat({
