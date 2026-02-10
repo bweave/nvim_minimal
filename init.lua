@@ -526,13 +526,6 @@ later(function()
         },
     })
 
-    -- Python (pyright)
-    vim.lsp.config('pyright', {
-        cmd = { 'pyright-langserver', '--stdio' },
-        filetypes = { 'python' },
-        root_markers = { 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', '.git' },
-    })
-
     -- Ruby LSP (install via: gem install ruby-lsp)
     -- Used for non-syntax_tree projects
     vim.lsp.config('ruby_lsp', {
@@ -562,7 +555,6 @@ later(function()
 
     -- Enable servers (they will start when matching filetypes are opened)
     vim.lsp.enable('lua_ls')
-    vim.lsp.enable('pyright')
     vim.lsp.enable('ruby_lsp')
     vim.lsp.enable('syntax_tree')
     vim.lsp.enable('ts_ls')
