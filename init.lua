@@ -199,11 +199,6 @@ now(function()
     -- Session options (for mini.sessions)
     opt.sessionoptions = { 'buffers', 'curdir', 'tabpages', 'winsize', 'winpos', 'folds', 'globals' }
 
-    -- vim-matchup: enable on-screen matching, disable offscreen statusline display
-    vim.g.matchup_matchparen_offscreen = {}
-    -- Disable treesitter integration to avoid compatibility errors with newer neovim
-    vim.g.matchup_treesitter_enabled = 0
-
     -- Global projectionist heuristics (alternates for non-Rails projects)
     vim.g.projectionist_heuristics = {
         -- Ruby with minitest (test/ directory)
