@@ -690,10 +690,12 @@ now(function()
         content = {
             active = function()
                 local mode, mode_hl = statusline.section_mode({ trunc_width = 120 })
+                local git = statusline.section_git({ trunc_width = 75 })
                 local filename = statusline.section_filename({ trunc_width = 140 })
                 local fileinfo = statusline.section_fileinfo({ trunc_width = 120 })
 
                 mode = vim.trim(mode)
+                git = vim.trim(git)
                 fileinfo = vim.trim(fileinfo)
 
                 local sep_r = '\u{e0b0}'
@@ -717,9 +719,11 @@ now(function()
                 vim.api.nvim_set_hl(0, 'StlSepL', { fg = mode_bg, bg = palette.base00 })
 
                 -- Build statusline manually to avoid combine_groups spacing
+                local git_section = git ~= '' and (' ' .. git .. ' ') or ''
                 return table.concat({
                     '%#', mode_hl, '# ', mode, ' ',
                     '%#StlSepR#', sep_r,
+                    '%#MiniStatuslineDevinfo#', git_section,
                     '%<',
                     '%#MiniStatuslineFilename# ', filename,
                     '%=',
@@ -866,6 +870,11 @@ later(function()
     map('n', '<leader>?', function()
         MiniExtra.pickers.keymaps()
     end, { desc = 'Search keymaps' })
+end)
+
+-- Git integration (provides branch info for statusline)
+later(function()
+    require('mini.git').setup()
 end)
 
 -- Git signs in the gutter
