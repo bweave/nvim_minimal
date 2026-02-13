@@ -1003,6 +1003,7 @@ later(function()
                 relativenumber = false,
                 signcolumn = 'no',
                 cursorline = false,
+                wrap = true,
             },
         },
         plugins = {
