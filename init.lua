@@ -1176,3 +1176,143 @@ later(function()
         open_on_github(start_line, end_line)
     end, { desc = 'Browse lines on GitHub' })
 end)
+
+--------------------------------------------------------------------------------
+-- 15. Brain auto-commit (~/brain only)
+--------------------------------------------------------------------------------
+later(function()
+    local brain_path = vim.fn.expand('~/brain')
+    local main_branch = 'main'
+
+    local is_pulling = false
+    local is_pushing = false
+
+    local function is_brain_file(filepath)
+        local expanded = vim.fn.expand(filepath)
+        return string.find(expanded, brain_path, 1, true) == 1
+    end
+
+    local function get_relative_path(filepath)
+        local expanded = vim.fn.expand(filepath)
+        return expanded:gsub(brain_path .. '/', '')
+    end
+
+    local function get_commit_context(filepath)
+        local rel_path = get_relative_path(filepath)
+        local parts = vim.split(rel_path, '/')
+
+        if #parts > 1 then
+            return parts[1]
+        end
+
+        local filename = parts[1]
+        return filename:match('(.+)%..+$') or filename
+    end
+
+    local function generate_commit_message(filepath)
+        local timestamp = os.date('%Y-%m-%d %H:%M:%S')
+        local context = get_commit_context(filepath)
+        local rel_path = get_relative_path(filepath)
+
+        local title = string.format('update %s @ %s', context, timestamp)
+        local body = string.format('Changes to `%s`\n\nAuto-committed on save from Neovim.', rel_path)
+
+        return title .. '\n\n' .. body
+    end
+
+    local function git_pull()
+        if is_pulling then return end
+        is_pulling = true
+
+        vim.fn.jobstart({ 'git', '-C', brain_path, 'pull', 'origin', main_branch }, {
+            cwd = brain_path,
+            on_exit = function(_, exit_code)
+                is_pulling = false
+                if exit_code ~= 0 then
+                    vim.notify('Brain: Pull failed - you may have conflicts', vim.log.levels.WARN)
+                end
+            end,
+            on_stdout = function(_, data)
+                if data then
+                    for _, line in ipairs(data) do
+                        if line:match('CONFLICT') or line:match('Merge conflict') then
+                            vim.notify('Brain: MERGE CONFLICT detected! Please resolve manually.', vim.log.levels.ERROR)
+                            is_pulling = false
+                        end
+                    end
+                end
+            end,
+        })
+    end
+
+    local function git_commit_and_push(filepath)
+        if is_pushing then return end
+
+        vim.fn.jobstart({ 'git', '-C', brain_path, 'status', '--porcelain' }, {
+            cwd = brain_path,
+            stdout_buffered = true,
+            on_stdout = function(_, data)
+                if not data or #data == 0 or (data[1] == '' and #data == 1) then
+                    return
+                end
+
+                is_pushing = true
+                local commit_msg = generate_commit_message(filepath)
+
+                vim.fn.jobstart({ 'git', '-C', brain_path, 'add', '-A' }, {
+                    cwd = brain_path,
+                    on_exit = function(_, add_exit_code)
+                        if add_exit_code ~= 0 then
+                            vim.notify('Brain: Failed to stage changes', vim.log.levels.ERROR)
+                            is_pushing = false
+                            return
+                        end
+
+                        vim.fn.jobstart({ 'git', '-C', brain_path, 'commit', '-m', commit_msg }, {
+                            cwd = brain_path,
+                            on_exit = function(_, commit_exit_code)
+                                if commit_exit_code ~= 0 then
+                                    vim.notify('Brain: Commit failed', vim.log.levels.ERROR)
+                                    is_pushing = false
+                                    return
+                                end
+
+                                vim.fn.jobstart({ 'git', '-C', brain_path, 'push', 'origin', main_branch }, {
+                                    cwd = brain_path,
+                                    on_exit = function(_, push_exit_code)
+                                        is_pushing = false
+                                        if push_exit_code == 0 then
+                                            vim.notify('Brain: Committed and pushed', vim.log.levels.INFO)
+                                        else
+                                            vim.notify('Brain: Push failed - check git status', vim.log.levels.ERROR)
+                                        end
+                                    end,
+                                })
+                            end,
+                        })
+                    end,
+                })
+            end,
+        })
+    end
+
+    local augroup = vim.api.nvim_create_augroup('BrainAutocommit', { clear = true })
+
+    vim.api.nvim_create_autocmd('BufReadPre', {
+        group = augroup,
+        callback = function(ev)
+            if is_brain_file(ev.file) then
+                git_pull()
+            end
+        end,
+    })
+
+    vim.api.nvim_create_autocmd('BufWritePost', {
+        group = augroup,
+        callback = function(ev)
+            if is_brain_file(ev.file) then
+                git_commit_and_push(ev.file)
+            end
+        end,
+    })
+end)
