@@ -69,6 +69,14 @@ later(function()
     add('folke/zen-mode.nvim')
 end)
 
+-- File explorer (neo-tree sidebar)
+later(function()
+    add({
+        source = 'nvim-neo-tree/neo-tree.nvim',
+        depends = { 'MunifTanjim/nui.nvim', 'nvim-lua/plenary.nvim' },
+    })
+end)
+
 --------------------------------------------------------------------------------
 -- 3. Colorscheme (evergreen: everforest-inspired via mini.base16)
 --------------------------------------------------------------------------------
@@ -662,6 +670,7 @@ end)
 -- Icons (load first)
 now(function()
     require('mini.icons').setup()
+    MiniIcons.mock_nvim_web_devicons()
 end)
 
 -- Tabline (buffer list at top)
@@ -779,6 +788,7 @@ later(function()
             -- Leader group descriptions
             { mode = 'n', keys = '<Leader>b', desc = '+buffers' },
             { mode = 'n', keys = '<Leader>c', desc = '+code' },
+            { mode = 'n', keys = '<Leader>e', desc = '+explorer' },
             { mode = 'n', keys = '<Leader>f', desc = '+find' },
             { mode = 'n', keys = '<Leader>g', desc = '+git' },
             { mode = 'n', keys = '<Leader>gh', desc = '+hunks' },
@@ -804,33 +814,60 @@ later(function()
     })
 end)
 
--- File explorer
+-- File explorer (neo-tree sidebar)
 later(function()
-    require('mini.files').setup({
-        mappings = {
-            close = 'q',
-            go_in = 'l',
-            go_in_plus = '<CR>',
-            go_out = 'h',
-            go_out_plus = 'H',
-            reset = '<BS>',
-            reveal_cwd = '@',
-            show_help = 'g?',
-            synchronize = '=',
-            trim_left = '<',
-            trim_right = '>',
+    require('neo-tree').setup({
+        default_component_configs = {
+            icon = {
+                provider = function(icon, node)
+                    local text, hl
+                    if node.type == 'directory' then
+                        text, hl = MiniIcons.get('directory', node.name)
+                    else
+                        text, hl = MiniIcons.get('file', node.name)
+                    end
+                    icon.text = text .. ' '
+                    icon.highlight = hl
+                end,
+            },
+            git_status = {
+                symbols = {
+                    added = '',
+                    modified = '',
+                    deleted = '',
+                    renamed = '➜',
+                    untracked = '★',
+                    ignored = '◌',
+                    unstaged = '✗',
+                    staged = '✓',
+                    conflict = '',
+                },
+            },
+        },
+        sources = { 'filesystem', 'buffers', 'git_status' },
+        window = {
+            width = 36,
+            mappings = {
+                ['l'] = 'open',
+                ['h'] = 'close_node',
+                ['<space>'] = 'none',
+            },
+        },
+        filesystem = {
+            follow_current_file = { enabled = true },
+            use_libuv_file_watcher = true,
+            filtered_items = {
+                visible = true,
+                hide_dotfiles = false,
+                hide_gitignored = false,
+            },
         },
     })
 
-    vim.keymap.set('n', '<leader>e', function()
-        if not MiniFiles.close() then
-            MiniFiles.open()
-        end
-    end, { desc = 'Toggle file explorer' })
-
-    vim.keymap.set('n', '<leader>F', function()
-        MiniFiles.open(vim.api.nvim_buf_get_name(0))
-    end, { desc = 'Reveal current file in explorer' })
+    vim.keymap.set('n', '<leader>e', '<cmd>Neotree toggle<CR>', { desc = 'Toggle file explorer' })
+    vim.keymap.set('n', '<leader>F', '<cmd>Neotree reveal<CR>', { desc = 'Reveal current file in explorer' })
+    vim.keymap.set('n', '<leader>be', '<cmd>Neotree toggle source=buffers<CR>', { desc = 'Buffer explorer' })
+    vim.keymap.set('n', '<leader>ge', '<cmd>Neotree toggle source=git_status<CR>', { desc = 'Git status explorer' })
 end)
 
 -- Fuzzy finder (pick + extra pickers)
